@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ｖ Ａ Ｐ Ｏ Ｒ Ｐ Ｌ Ａ Ｙ Ｅ Ｒ</title>
+<link href="https://fonts.googleapis.com/css2?family=Monoton&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #ff71ce;
+    --blue: #01cdfe;
+    --mint: #05ffa1;
+    --purple: #b967ff;
+    --yellow: #fffb96;
+    --bg1: #1a0933;
+    --bg2: #2d0b4e;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 45%, #ff71ce33 100%);
+    color: #fff;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .sun {
+    position: fixed; left: 50%; top: 18vh; transform: translateX(-50%);
+    width: 340px; height: 340px; border-radius: 50%;
+    background: linear-gradient(180deg, var(--yellow) 0%, #ff9e5e 40%, var(--pink) 75%);
+    -webkit-mask: repeating-linear-gradient(180deg, #000 0 22px, transparent 22px 30px);
+            mask: repeating-linear-gradient(180deg, #000 0 22px, transparent 22px 30px);
+    filter: drop-shadow(0 0 40px #ff71ce88);
+    z-index: 0; opacity: .85;
+  }
+  .grid {
+    position: fixed; left: -50%; right: -50%; bottom: 0; height: 45vh;
+    background-image:
+      linear-gradient(var(--pink) 2px, transparent 2px),
+      linear-gradient(90deg, var(--pink) 2px, transparent 2px);
+    background-size: 60px 60px;
+    transform: perspective(300px) rotateX(60deg);
+    transform-origin: bottom;
+    animation: scroll 2s linear infinite;
+    opacity: .55; z-index: 0;
+    -webkit-mask: linear-gradient(to top, #000 30%, transparent);
+            mask: linear-gradient(to top, #000 30%, transparent);
+  }
+  @keyframes scroll { to { background-position: 0 60px; } }
+
+  main {
+    position: relative; z-index: 1;
+    width: min(640px, calc(100% - 32px));
+    margin: 40px 0;
+  }
+  h1 {
+    font-family: 'Monoton', cursive; font-weight: 400;
+    text-align: center; font-size: clamp(32px, 8vw, 56px); margin: 0 0 6px;
+    background: linear-gradient(90deg, var(--blue), var(--pink));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(3px 3px 0 #b967ff88);
+  }
+  .jp { text-align: center; color: var(--mint); letter-spacing: 6px; margin-bottom: 24px; text-shadow: 0 0 8px var(--mint); }
+
+  .window {
+    background: #c0c0c0; color: #000;
+    border: 2px solid; border-color: #fff #404040 #404040 #fff;
+    box-shadow: 8px 8px 0 #00000066;
+  }
+  .titlebar {
+    background: linear-gradient(90deg, #000080, var(--purple));
+    color: #fff; padding: 4px 8px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .titlebar .btns span {
+    display: inline-block; width: 18px; height: 16px; margin-left: 3px; background: #c0c0c0;
+    border: 2px solid; border-color: #fff #404040 #404040 #fff; color: #000; font-size: 14px; line-height: 10px; text-align: center;
+  }
+  .body { padding: 14px; }
+
+  .screen {
+    background: #0b0220; color: var(--mint);
+    border: 2px solid; border-color: #404040 #fff #fff #404040;
+    padding: 12px; position: relative; overflow: hidden;
+  }
+  .now { font-size: 26px; white-space: nowrap; overflow: hidden; color: var(--pink); text-shadow: 0 0 6px var(--pink); }
+  .now span { display: inline-block; padding-left: 100%; animation: marquee 14s linear infinite; }
+  @keyframes marquee { to { transform: translateX(-100%); } }
+  .meta { display: flex; justify-content: space-between; color: var(--blue); margin-top: 4px; }
+  canvas { width: 100%; height: 110px; display: block; margin-top: 8px; }
+
+  .progress {
+    margin-top: 12px; height: 16px; background: #fff; cursor: pointer;
+    border: 2px solid; border-color: #404040 #fff #fff #404040; position: relative;
+  }
+  .progress .fill { height: 100%; width: 0; background: repeating-linear-gradient(90deg, #000080 0 12px, #c0c0c0 12px 14px); }
+
+  .controls { display: flex; gap: 8px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+  button, .pick {
+    font-family: 'VT323', monospace; font-size: 22px; color: #000;
+    background: #c0c0c0; padding: 4px 16px; cursor: pointer;
+    border: 2px solid; border-color: #fff #404040 #404040 #fff;
+  }
+  button:active, .pick:active { border-color: #404040 #fff #fff #404040; }
+  button:disabled { color: #808080; cursor: default; }
+  .pick { display: block; width: 100%; text-align: center; background: var(--pink); color: #fff; text-shadow: 1px 1px 0 #000; }
+
+  .row { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .row label { white-space: nowrap; }
+  .row input[type=range] { flex: 1; min-width: 120px; accent-color: #000080; }
+  .badge { background: #000080; color: #fff; padding: 0 8px; }
+
+  .list {
+    margin-top: 12px; max-height: 220px; overflow-y: auto; background: #fff;
+    border: 2px solid; border-color: #404040 #fff #fff #404040; font-size: 18px;
+  }
+  .list div { padding: 2px 8px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .list div:hover { background: #ddd; }
+  .list div.on { background: #000080; color: #fff; }
+  .hint { text-align: center; color: #333; margin-top: 8px; font-size: 18px; }
+  input[type=file] { display: none; }
+</style>
+</head>
+<body>
+<div class="sun"></div>
+<div class="grid"></div>
+
+<main>
+  <h1>VAPORPLAY</h1>
+  <div class="jp">ヴェイパーウェイヴ ・ 1.25x ・ 永遠</div>
+
+  <div class="window">
+    <div class="titlebar"><span>♫ AESTHETIC.EXE</span><span class="btns"><span>_</span><span>□</span><span>×</span></span></div>
+    <div class="body">
+      <button class="pick" id="pickBtn">📁 ＳＥＬＥＣＴ　ＦＯＬＤＥＲ</button>
+      <input type="file" id="folder" webkitdirectory directory multiple>
+
+      <div class="screen" style="margin-top:12px">
+        <div class="now"><span id="title">～ insert music folder ～</span></div>
+        <div class="meta"><span id="time">0:00 / 0:00</span><span id="count">0 tracks</span></div>
+        <canvas id="viz"></canvas>
+      </div>
+
+      <div class="progress" id="progress"><div class="fill" id="fill"></div></div>
+
+      <div class="controls">
+        <button id="prev" disabled>⏮</button>
+        <button id="play" disabled>▶</button>
+        <button id="next" disabled>⏭</button>
+        <button id="reshuffle" disabled>🔀 reshuffle</button>
+      </div>
+
+      <div class="row">
+        <label>VOL</label>
+        <input type="range" id="vol" min="0" max="1" step="0.01" value="0.85">
+        <span class="badge">SPEED 1.25×</span>
+        <label><input type="checkbox" id="eqToggle" checked> EQ</label>
+      </div>
+
+      <div class="list" id="list"></div>
+      <div class="hint">pick a folder → everything shuffles &amp; plays automatically<br>(files are read straight from your disk — nothing is uploaded)</div>
+    </div>
+  </div>
+</main>
+
+<audio id="audio" preload="auto"></audio>
+
+<script>
+const SPEED = 1.25;
+const AUDIO_EXT = /\.(mp3|m4a|aac|wav|ogg|oga|flac|opus|webm)$/i;
+
+const audio = document.getElementById('audio');
+const $ = id => document.getElementById(id);
+
+let tracks = [];      // [{handle | file, name}]
+let order = [];       // shuffled indices
+let pos = 0;          // position in order
+let currentUrl = null;
+let ctx, eqOut, bypass, analyser;
+
+// Keep the original pitch while playing faster (time-stretch, not chipmunk).
+audio.preservesPitch = true;
+audio.mozPreservesPitch = true;
+audio.webkitPreservesPitch = true;
+audio.defaultPlaybackRate = SPEED;
+audio.playbackRate = SPEED;
+
+/* ---------- Audio graph: source -> EQ -> compressor -> analyser -> out ---------- */
+function setupAudio() {
+  if (ctx) { ctx.resume(); return; }
+  ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const src = ctx.createMediaElementSource(audio);
+
+  // Gentle "smoothing" EQ tuned for time-stretched audio:
+  // time-stretching thins out the low end and adds a slightly metallic,
+  // phasey edge in the upper mids — this restores warmth and tames the harshness.
+  const bands = [
+    { type: 'highpass',  f: 25,    q: 0.7 },             // clear sub rumble
+    { type: 'lowshelf',  f: 110,   g: 2.5 },             // restore body / warmth
+    { type: 'peaking',   f: 350,   g: -1.0, q: 1.0 },    // reduce muddiness
+    { type: 'peaking',   f: 2800,  g: -2.0, q: 1.2 },    // tame stretch "warble" edge
+    { type: 'peaking',   f: 5500,  g: -1.5, q: 1.5 },    // soften sibilance / artifacts
+    { type: 'highshelf', f: 11000, g: 1.5 },             // a bit of air back on top
+  ];
+  const eqChain = bands.map(b => {
+    const n = ctx.createBiquadFilter();
+    n.type = b.type; n.frequency.value = b.f;
+    if (b.q != null) n.Q.value = b.q;
+    if (b.g != null) n.gain.value = b.g;
+    return n;
+  });
+
+  // Soft compressor glues it together so nothing pokes out
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.value = -18; comp.knee.value = 24; comp.ratio.value = 2.5;
+  comp.attack.value = 0.01; comp.release.value = 0.25;
+
+  const eqIn = ctx.createGain();
+  eqOut = ctx.createGain();
+  bypass = ctx.createGain();
+  analyser = ctx.createAnalyser(); analyser.fftSize = 256;
+
+  src.connect(eqIn);
+  src.connect(bypass);
+  let node = eqIn;
+  for (const f of eqChain) { node.connect(f); node = f; }
+  node.connect(comp); comp.connect(eqOut);
+  eqOut.connect(analyser); bypass.connect(analyser);
+  analyser.connect(ctx.destination);
+
+  applyEq();
+  drawViz();
+}
+function applyEq() {
+  if (!ctx) return;
+  const on = $('eqToggle').checked;
+  eqOut.gain.value = on ? 1 : 0;
+  bypass.gain.value = on ? 0 : 1;
+}
+$('eqToggle').onchange = applyEq;
+
+/* ---------- Folder loading ---------- */
+// Uses the File System Access API: the browser only gets permission to *read*
+// the folder locally — nothing is uploaded anywhere, and each song is only
+// opened from disk at the moment it starts playing.
+$('pickBtn').onclick = async () => {
+  setupAudio();
+  if (!window.showDirectoryPicker) { $('folder').click(); return; } // fallback for Firefox/Safari
+  let dir;
+  try { dir = await window.showDirectoryPicker({ mode: 'read', id: 'vaporplay-music' }); }
+  catch { return; } // user cancelled
+  $('title').textContent = '～ scanning folder... ～';
+  const found = [];
+  await scan(dir, found);
+  startWith(found);
+};
+
+async function scan(dir, out) {
+  for await (const entry of dir.values()) {
+    if (entry.kind === 'file' && AUDIO_EXT.test(entry.name)) {
+      out.push({ handle: entry, name: entry.name.replace(/\.[^.]+$/, '') });
+    } else if (entry.kind === 'directory') {
+      await scan(entry, out);
+    }
+  }
+}
+
+// Fallback path (browsers without showDirectoryPicker)
+$('folder').onchange = e => {
+  startWith([...e.target.files].filter(f => AUDIO_EXT.test(f.name))
+    .map(f => ({ file: f, name: f.name.replace(/\.[^.]+$/, '') })));
+};
+
+function startWith(found) {
+  if (!found.length) { $('title').textContent = '～ no audio files found in that folder ～'; return; }
+  tracks = found;
+  shuffle();
+  ['prev','play','next','reshuffle'].forEach(id => $(id).disabled = false);
+  $('count').textContent = tracks.length + ' tracks';
+  load(0, true);
+}
+
+/* ---------- Shuffle & playback ---------- */
+function shuffle() {
+  order = tracks.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  renderList();
+}
+
+function renderList() {
+  const list = $('list');
+  list.innerHTML = '';
+  order.forEach((ti, p) => {
+    const d = document.createElement('div');
+    d.textContent = (p + 1).toString().padStart(2, '0') + '. ' + tracks[ti].name;
+    d.onclick = () => load(p, true);
+    list.appendChild(d);
+  });
+}
+
+let loadId = 0;
+async function load(p, autoplay) {
+  if (!order.length) return;
+  pos = (p + order.length) % order.length;
+  const t = tracks[order[pos]];
+  const id = ++loadId;
+  let file;
+  try { file = t.file || await t.handle.getFile(); } // opened from disk only now
+  catch { if (id === loadId && order.length > 1) load(pos + 1, autoplay); return; }
+  if (id !== loadId) return; // user skipped again while this was opening
+  if (currentUrl) URL.revokeObjectURL(currentUrl);
+  currentUrl = URL.createObjectURL(file);
+  audio.src = currentUrl;
+  audio.preservesPitch = true;
+  audio.defaultPlaybackRate = SPEED;
+  audio.playbackRate = SPEED;
+  $('title').textContent = '★ ' + t.name + ' ★';
+  [...$('list').children].forEach((d, i) => d.classList.toggle('on', i === pos));
+  $('list').children[pos]?.scrollIntoView({ block: 'nearest' });
+  if (autoplay) play();
+}
+
+function play() {
+  setupAudio();
+  audio.playbackRate = SPEED;
+  audio.play().catch(() => {});
+}
+
+audio.onplay = () => $('play').textContent = '⏸';
+audio.onpause = () => $('play').textContent = '▶';
+// Some browsers reset the rate on load — force it back
+audio.onloadedmetadata = () => { audio.playbackRate = SPEED; };
+audio.onratechange = () => { if (audio.playbackRate !== SPEED) audio.playbackRate = SPEED; };
+
+audio.onended = () => {
+  if (pos + 1 >= order.length) { shuffle(); load(0, true); } // loop forever with a fresh shuffle
+  else load(pos + 1, true);
+};
+audio.onerror = () => { if (order.length > 1) load(pos + 1, true); }; // skip unplayable files
+
+$('play').onclick = () => audio.paused ? play() : audio.pause();
+$('next').onclick = () => load(pos + 1, true);
+$('prev').onclick = () => audio.currentTime > 3 ? (audio.currentTime = 0) : load(pos - 1, true);
+$('reshuffle').onclick = () => { shuffle(); load(0, true); };
+$('vol').oninput = e => audio.volume = e.target.value;
+audio.volume = $('vol').value;
+
+/* ---------- Progress ---------- */
+const fmt = s => isFinite(s) ? Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0') : '0:00';
+audio.ontimeupdate = () => {
+  $('fill').style.width = (audio.currentTime / audio.duration * 100 || 0) + '%';
+  $('time').textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+};
+$('progress').onclick = e => {
+  if (!audio.duration) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  audio.currentTime = (e.clientX - r.left) / r.width * audio.duration;
+};
+
+/* ---------- Visualizer ---------- */
+function drawViz() {
+  const c = $('viz'), g = c.getContext('2d');
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  (function frame() {
+    requestAnimationFrame(frame);
+    const w = c.width = c.clientWidth * devicePixelRatio;
+    const h = c.height = c.clientHeight * devicePixelRatio;
+    analyser.getByteFrequencyData(data);
+    const bars = 48, bw = w / bars;
+    const grad = g.createLinearGradient(0, h, 0, 0);
+    grad.addColorStop(0, '#01cdfe'); grad.addColorStop(.5, '#b967ff'); grad.addColorStop(1, '#ff71ce');
+    g.fillStyle = grad;
+    for (let i = 0; i < bars; i++) {
+      const v = data[Math.floor(i * data.length * 0.8 / bars)] / 255;
+      const bh = Math.max(2, v * h);
+      g.fillRect(i * bw + 1, h - bh, bw - 2, bh);
+    }
+  })();
+}
+</script>
+</body>
+</html>
